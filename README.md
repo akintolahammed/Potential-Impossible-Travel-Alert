@@ -41,15 +41,16 @@ DeviceProcessEvents
 ``` 
 ```kql
 let TimePeriodThreshold = timespan(7d);
-let NumberOfDifferentLocationAllowed = 1;
+let NumberOfDifferentLocationsAllowed = 1;
 SigninLogs
 | where TimeGenerated > ago(TimePeriodThreshold)
-| summarize count() by UserPrincipalName, City = tostring(parse_json(LocationDetails).city), State = tostring(parse_json(LocationDetails).state), Country = tostring(parse_json(LocationDetails).countryOrRegion)
-| project UserPrincipalName, City, State, Country
-| summarize PotentialImpossibleTravelInstances = count() by UserPrincipalName
-| where PotentialImpossibleTravelInstances > NumberOfDifferentLocationAllowed
+| summarize Count = count() by UserPrincipalName, UserId, City = tostring(parse_json(LocationDetails).city),State = tostring(parse_json(LocationDetails).state), Country = tostring(parse_json(LocationDetails).countryOrRegion)
+| project UserPrincipalName, UserId, State, Country
+| summarize PotentialImpossibleTravelInstances = count() by UserPrincipalName, UserId
+| where PotentialImpossibleTravelInstances > NumberOfDifferentLocationsAllowed
 ```
-![Screenshot 2025-01-08 105713](https://github.com/user-attachments/assets/1934650d-0b0c-47c6-a3a8-c45d8d8eadb0)
+<img width="526" alt="image" src="https://github.com/user-attachments/assets/400ce56c-316f-4a29-a354-4d8eaec76074" />
+
 
 3. **Analytics Rule Settings:**  
    - **Name:** Potential Impossible Travel Alert  
@@ -57,7 +58,10 @@ SigninLogs
    - ✅ Enable the Rule.  
    - 🔄 Run Query Every 4 Hours.  
    - 📅 Lookup Data for the Last 24 Hours.  
-   - ❌ Stop Running Query After Alert is Generated.  
+   - ❌ Stop Running Query After Alert is Generated.
+
+     <img width="948" alt="image" src="https://github.com/user-attachments/assets/b2f63f4d-856f-414f-96d1-6444ea25d670" />
+
 
 4. **Entity Mappings:**  
    - **Account ID:** AadUserId → `UserId`  
@@ -70,7 +74,13 @@ SigninLogs
 1. **Steps to Validate Incident:**  
    - ✅ Assign the incident to yourself and set the status to **Active**.  
    - 🔄 Use **Investigate** to review entities (may take time).  
-   - 📊 Examine output from the analytics rule to identify flagged accounts.  
+   - 📊 Examine output from the analytics rule to identify flagged accounts.
+  
+     <img width="260" alt="image" src="https://github.com/user-attachments/assets/3be5247b-4937-4664-9db8-16e4e8695465" />
+
+
+     <img width="948" alt="image" src="https://github.com/user-attachments/assets/aa7c6f91-1bef-4c2e-b11c-0b8e3c9fd168" />
+
 
 2. **Account Analysis:**  
    **Example Query:**  
