@@ -85,14 +85,18 @@ SigninLogs
 2. **Account Analysis:**  
    **Example Query:**  
    ```kql
-   let TimePeriodThreshold = timespan(7d);
+   let TargetUserPrincipalName = "f09044bb5bfff419bad5515bf4ac997dbad838d47ca287e0d2b2559549f53c78@lognpacific.com"; // 
+   Change to your target user (UserPrincipalName)
+   let TimePeriodThreshold = timespan(7d); // Change to how far back you want to look
    SigninLogs
    | where TimeGenerated > ago(TimePeriodThreshold)
-   | where UserPrincipalName == "username@domain.com"
-   | project TimeGenerated, UserPrincipalName, UserId, City, State, Country
+   | where UserPrincipalName == TargetUserPrincipalName
+   | project TimeGenerated, UserPrincipalName,UserId, City = tostring(parse_json(LocationDetails).city), State = 
+   tostring(parse_json(LocationDetails).state), Country = tostring(parse_json(LocationDetails).countryOrRegion)
    | order by TimeGenerated desc
    ```
-![Screenshot 2025-01-08 121358](https://github.com/user-attachments/assets/2739121d-5914-4468-a480-cecee0883432)
+<img width="667" alt="image" src="https://github.com/user-attachments/assets/aed857d3-4cd8-49ac-b93e-645d24bf4e82" />
+
 
    **Observed Findings:**  
    - **Account 1:** Logins from 3 nearby locations within 4 days. No unusual behavior.  
